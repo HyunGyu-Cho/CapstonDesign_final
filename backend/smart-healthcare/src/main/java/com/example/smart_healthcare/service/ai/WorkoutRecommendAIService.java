@@ -126,13 +126,12 @@ public class WorkoutRecommendAIService {
 
             WorkoutRecommendationResponseDto result = parseGptResponseWithRetry(content, inbody, userId);
 
-            // JSON 검증: 각 요일마다 최소 3개 운동 확인
+            // JSON 검증: 각 요일마다 최소 3개 운동 확인 (성능 최적화: 경고만 하고 재시도 안 함)
             if (inbody.survey() != null && inbody.survey().getSelectedDaysEn() != null) {
                 List<String> selectedDays = inbody.survey().getSelectedDaysEn();
                 if (!ensureAtLeastThreePerDay(selectedDays, result)) {
-                    log.warn("⚠️ 일부 요일에 3개 미만의 운동이 있습니다. 재시도합니다.");
-                    // 재프롬프트로 재시도
-                    return recommendWithRetry(inbody, userId, 1);
+                    log.warn("⚠️ 일부 요일에 3개 미만의 운동이 있습니다. (성능 최적화: 재시도하지 않고 현재 결과 반환)");
+                    // 성능 최적화: 재시도하지 않고 현재 결과 반환 (프롬프트에서 이미 요구하고 있으므로 대부분 충족됨)
                 }
             }
 

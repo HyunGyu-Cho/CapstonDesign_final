@@ -199,10 +199,10 @@ public class DietRecommendAIService {
     }
 
     /**
-     * 파싱 실패 처리 헬퍼
+     * 파싱 실패 처리 헬퍼 (성능 최적화: API 재호출 제거)
      */
     private DietRecommendationResponseDto handleParseFailure(String content, InbodyDataRequestDto inbody, Long userId, Exception originalException) {
-        // JSON 재시도 로직
+        // JSON 재시도 로직 (빠른 정제 시도만 수행)
         String cleanedContent = tryExtractJsonFromText(content);
         if (cleanedContent != null && !cleanedContent.trim().isEmpty() && !cleanedContent.equals(content)) {
             log.info("🔄 JSON 재시도: 정제된 내용으로 파싱 시도");
@@ -215,26 +215,20 @@ public class DietRecommendAIService {
                 log.error("❌ 원본 예외: {}", originalException.getMessage());
             }
         }
-        // 최종 재프롬프트 시도
-        log.warn("⚠️ JSON 파싱 완전 실패 → 재프롬프트로 재시도");
-        try {
-            return retryWithJsonOnlyPrompt(inbody, userId);
-        } catch (Exception retryException) {
-            log.error("❌ 재프롬프트 재시도도 실패: {}", retryException.getMessage(), retryException);
-            log.error("❌ 원본 예외: {}", originalException.getMessage(), originalException);
-            
-            // 최종적으로 더 자세한 에러 메시지 제공
-            String errorMessage = "AI가 올바른 JSON 형식으로 응답하지 않았습니다.";
-            if (retryException.getMessage() != null) {
-                if (retryException.getMessage().contains("잘린") || retryException.getMessage().contains("truncated")) {
-                    errorMessage = "AI 응답이 길어서 잘렸습니다. 잠시 후 다시 시도해주세요.";
-                } else if (retryException.getMessage().contains("JSON") || retryException.getMessage().contains("파싱")) {
-                    errorMessage = "AI 응답 형식 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
-                }
+        // 성능 최적화: API 재호출 제거, 에러만 반환
+        log.warn("⚠️ JSON 파싱 완전 실패 (성능 최적화: API 재호출 없이 에러 반환)");
+        
+        // 최종적으로 더 자세한 에러 메시지 제공
+        String errorMessage = "AI가 올바른 JSON 형식으로 응답하지 않았습니다.";
+        if (originalException.getMessage() != null) {
+            if (originalException.getMessage().contains("잘린") || originalException.getMessage().contains("truncated")) {
+                errorMessage = "AI 응답이 길어서 잘렸습니다. 잠시 후 다시 시도해주세요.";
+            } else if (originalException.getMessage().contains("JSON") || originalException.getMessage().contains("파싱")) {
+                errorMessage = "AI 응답 형식 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
             }
-            
-            throw new BusinessException(ErrorCode.INTERNAL_ERROR, errorMessage, retryException);
         }
+        
+        throw new BusinessException(ErrorCode.INTERNAL_ERROR, errorMessage, originalException);
     }
 
     /**
@@ -410,51 +404,8 @@ public class DietRecommendAIService {
         }
     }
 
-    /**
-     * JSON-only 재프롬프트로 재시도
-     */
-    private DietRecommendationResponseDto retryWithJsonOnlyPrompt(InbodyDataRequestDto inbody, Long userId) {
-        log.info("🔄 JSON-only 재프롬프트로 재시도 시작");
-        try {
-            // 강화된 시스템 프롬프트
-            String systemPrompt = buildSystemPrompt(); // 기존 단순화된 프롬프트 사용
-            String userPrompt = buildUserPrompt(inbody);
-            
-            // JSON-only 강조 추가
-            userPrompt += "\n\n**중요: 반드시 위의 JSON 스키마 형식으로만 응답하세요.**";
-            userPrompt += "\n- 오직 유효한 JSON 객체만 반환하세요";
-            userPrompt += "\n- JSON 외의 다른 텍스트는 절대 포함하지 마세요";
-            
-            Map<String, Object> request = new HashMap<>();
-            request.put("model", openAIClient.getDefaultModel());
-            request.put("messages", List.of(
-                    Map.of("role", "system", "content", systemPrompt),
-                    Map.of("role", "user", "content", userPrompt)
-            ));
-            request.put("temperature", 0.1); // 더 낮은 온도로 일관성 향상
-            request.put("max_tokens", openAIClient.getDefaultMaxTokens());
-            request.put("response_format", Map.of("type", "json_object"));
-            
-            log.info("🔄 JSON-only 재시도 API 호출 시작");
-            Map<String, Object> response = openAIClient.chatCompletions(request);
-            
-            if (response == null) {
-                throw new BusinessException(ErrorCode.INTERNAL_ERROR, "JSON-only 재시도에서도 API 응답이 null입니다.");
-            }
-            
-            String content = extractContentFromResponse(response);
-            if (content == null || content.isBlank()) {
-                throw new BusinessException(ErrorCode.INTERNAL_ERROR, "JSON-only 재시도에서도 응답 본문이 비었습니다.");
-            }
-            
-            DietRecommendationResponseDto result = parseGptResponse(content);
-            log.info("✅ JSON-only 재시도 성공");
-            return result;
-        } catch (Exception e) {
-            log.error("❌ JSON-only 재시도도 실패: {}", e.getMessage(), e);
-            throw new BusinessException(ErrorCode.INTERNAL_ERROR, "AI가 올바른 JSON 형식으로 응답하지 않았습니다. 다시 시도해주세요.");
-        }
-    }
+    // 성능 최적화: API 재호출 제거로 인해 더 이상 사용되지 않음
+    // JSON 파싱 실패 시 빠른 JSON 정제만 시도하고, 실패하면 에러 반환
 
     /**
      * 텍스트에서 JSON 추출 시도
