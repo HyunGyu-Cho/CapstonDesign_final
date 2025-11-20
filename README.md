@@ -650,27 +650,6 @@ smart-healthcare/
 - **Backend**: Java 코딩 컨벤션 준수, Lombok 사용
 - **Frontend**: ESLint 규칙 준수, 함수형 컴포넌트 사용
 
-### 브랜치 전략
-- `main`: 프로덕션 브랜치
-- `develop`: 개발 브랜치
-- `feature/*`: 기능 개발 브랜치
-- `hotfix/*`: 긴급 수정 브랜치
-
-### 커밋 메시지 규칙
-```
-[타입] 간단한 설명
-
-상세 설명 (선택사항)
-
-[타입]
-- feat: 새로운 기능
-- fix: 버그 수정
-- docs: 문서 수정
-- style: 코드 포맷팅
-- refactor: 코드 리팩토링
-- test: 테스트 추가
-- chore: 빌드 설정 변경
-```
 
 ### 테스트
 ```bash
@@ -685,40 +664,6 @@ npm test
 
 ---
 
-## 🤝 기여하기
-
-프로젝트에 기여하고 싶으시다면 다음 단계를 따르세요:
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📝 라이선스
-
-이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
-
----
-
-## 👥 팀원
-
-- [팀원 1](https://github.com/username1)
-- [팀원 2](https://github.com/username2)
-- [팀원 3](https://github.com/username3)
-
----
-
-## 📞 문의
-
-프로젝트에 대한 문의사항이 있으시면 이슈를 등록해주세요.
-
-- 📧 Email: your-email@example.com
-- 🐛 Issues: [GitHub Issues](https://github.com/your-username/smart-healthcare/issues)
-
----
 
 ## 🙏 감사의 말
 
