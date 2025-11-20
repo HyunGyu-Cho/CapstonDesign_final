@@ -43,7 +43,6 @@
 - 🎯 **맞춤형 추천**: 사용자별 인바디 데이터와 설문조사를 기반으로 한 개인화된 추천
 - 📊 **데이터 시각화**: 인바디 기록 히스토리 및 통계 제공
 - 👥 **커뮤니티**: 사용자 간 정보 공유 및 소통 플랫폼
-- 🔒 **보안**: JWT 기반 인증 및 소셜 로그인 지원
 
 ---
 
@@ -51,7 +50,6 @@
 
 ### 1. 인증 및 사용자 관리
 - ✅ 이메일/비밀번호 회원가입 및 로그인
-- ✅ 구글, 카카오, 네이버 소셜 로그인 지원
 - ✅ JWT 기반 토큰 인증 시스템
 - ✅ 사용자 프로필 관리
 
@@ -130,7 +128,6 @@
 ### AI & External APIs
 - **AI 모델**: OpenAI GPT-4o
 - **YouTube API**: YouTube Data API v3
-- **소셜 로그인**: Google OAuth, Kakao OAuth, Naver OAuth
 
 ### DevOps
 - **컨테이너화**: Docker, Docker Compose
@@ -558,7 +555,6 @@ smart-healthcare/
 #### 인증
 - `POST /api/auth/signup` - 회원가입
 - `POST /api/auth/login` - 로그인
-- `POST /api/auth/social-login` - 소셜 로그인
 - `GET /api/auth/me` - 현재 사용자 정보
 
 #### 인바디 관리
@@ -618,7 +614,7 @@ smart-healthcare/
 
 ### 1. 회원가입 및 로그인
 1. 메인 페이지에서 "회원가입" 클릭
-2. 이메일/비밀번호 입력 또는 소셜 로그인 선택
+2. 이메일/비밀번호 입력 
 3. 회원가입 완료 후 로그인
 
 ### 2. 인바디 데이터 입력
